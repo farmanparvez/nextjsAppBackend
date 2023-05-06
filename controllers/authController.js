@@ -33,15 +33,18 @@ exports.signIn = catchAsync(async (req, res, next) => {
     console.log(user.id)
     console.log(process.env.ACCESSTOKEN_EXPIRESIN)
     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.ACCESSTOKEN_EXPIRESIN });
-    // const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
+    const refreshAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.REFRESHACCESSTOKEN_EXPIRESIN });
+    // const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
     console.log(accessToken)
+    // const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
     // const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
     // const data = await Auth.findByIdAndUpdate(user._id, { $set: { refreshAccessToken, accessToken } }, { new: true, runValidators: true }).select("-password")
     res.status(200).json({
         status: 'success',
         message: 'User logged in successfully',
         // data
-        // accessToken,
+        accessToken,
+        refreshAccessToken,
         user
     })
 
