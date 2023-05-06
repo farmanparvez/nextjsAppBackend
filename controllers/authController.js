@@ -30,7 +30,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
     if (!user) return next(new AppError('User not found', 404))
     const isMatch = await user.comparePassword(password, user.password)
     if (!isMatch) return next(new AppError('Invalid credentials', 401))
-    // const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
+    const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
     const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
     // const data = await Auth.findByIdAndUpdate(user._id, { $set: { refreshAccessToken, accessToken } }, { new: true, runValidators: true }).select("-password")
     res.status(200).json({
