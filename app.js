@@ -1,16 +1,20 @@
 const express = require('express');
-const cors = require('cors')
-const app = express();
 const AppError = require('./utils/AppError')
 const globalErrorControler = require('./controllers/globalErrorController')
 const authRouter = require('./routes/authRoutes');
 const userRouter = require('./routes/userRoutes');
+const app = express();
+const cors = require('cors')
 
-app.use(cors())
+const corsOption = {
+    origin: ['http://localhost:3000'],
+};
+
+app.use(cors(corsOption))
 app.use(express.json())
-app.get('/', (req, res) => res.status(200).json({
-    working: 'working'
-}))
+// app.get('/', (req, res) => res.status(200).json({
+//     working: 'working'
+// }))
 
 app.use('/api', authRouter)
 app.use('/api', userRouter)
