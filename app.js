@@ -10,7 +10,7 @@ const corsOption = {
     origin: ['http://localhost:3000'],
 };
 
-app.use(cors(corsOption))
+app.use(cors())
 app.use(express.json())
 app.get('/', (req, res) => res.status(200).json({
     working: 'working'
