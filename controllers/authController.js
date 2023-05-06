@@ -1,7 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const Auth = require('../models/auth');
 const AppError = require('../utils/AppError');
-const generateToken = require('../utils/token');
+const generateToken = require('../utils/generateToken');
 const jwt = require('jsonwebtoken');
 
 exports.signUp = catchAsync(async (req, res, next) => {
@@ -28,9 +28,13 @@ exports.signIn = catchAsync(async (req, res, next) => {
     if (!email || !password) return next(new AppError('Invalid data', 400))
     const user = await Auth.findOne({ email })
     if (!user) return next(new AppError('User not found', 404))
-    // const isMatch = await user.comparePassword(password, user.password)
-    // if (!isMatch) return next(new AppError('Invalid credentials', 401))
+    const isMatch = await user.comparePassword(password, user.password)
+    if (!isMatch) return next(new AppError('Invalid credentials', 401))
+    console.log(user.id)
+    console.log(process.env.ACCESSTOKEN_EXPIRESIN)
+    const accessToken = jwt.sign({ userId: user._id }, 'secret', { expiresIn: 60 * 60 });
     // const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
+    console.log(accessToken)
     // const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
     // const data = await Auth.findByIdAndUpdate(user._id, { $set: { refreshAccessToken, accessToken } }, { new: true, runValidators: true }).select("-password")
     res.status(200).json({
