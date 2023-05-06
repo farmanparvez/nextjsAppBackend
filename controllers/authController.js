@@ -32,7 +32,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
     if (!isMatch) return next(new AppError('Invalid credentials', 401))
     console.log(user.id)
     console.log(process.env.ACCESSTOKEN_EXPIRESIN)
-    const accessToken = jwt.sign({ userId: user._id }, 'secret', { expiresIn: 60 * 60 });
+    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.ACCESSTOKEN_EXPIRESIN });
     // const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
     console.log(accessToken)
     // const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
