@@ -1,10 +1,10 @@
 const express = require('express');
+const cors = require('cors')
 const AppError = require('./utils/AppError')
 const globalErrorControler = require('./controllers/globalErrorController')
 const authRouter = require('./routes/authRoutes');
 const userRouter = require('./routes/userRoutes');
 const app = express();
-const cors = require('cors')
 
 const corsOption = {
     origin: ['http://localhost:3000'],
