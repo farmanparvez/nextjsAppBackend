@@ -1,7 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const Auth = require('../models/auth');
 const AppError = require('../utils/AppError');
-const generateToken = require('../utils/generateToken');
+// const generateToken = require('../utils/generateToken');
 const jwt = require('jsonwebtoken');
 
 exports.signUp = catchAsync(async (req, res, next) => {
@@ -23,6 +23,10 @@ exports.signUp = catchAsync(async (req, res, next) => {
     })
 })
 
+const generateToken = (userId, expires) => {
+    return jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: expires })
+}
+
 exports.signIn = catchAsync(async (req, res, next) => {
     const { email, password } = req.body
     if (!email || !password) return next(new AppError('Invalid data', 400))
@@ -32,20 +36,20 @@ exports.signIn = catchAsync(async (req, res, next) => {
     if (!isMatch) return next(new AppError('Invalid credentials', 401))
     console.log(user.id)
     console.log(process.env.ACCESSTOKEN_EXPIRESIN)
-    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.ACCESSTOKEN_EXPIRESIN });
-    const refreshAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.REFRESHACCESSTOKEN_EXPIRESIN });
+    // const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.ACCESSTOKEN_EXPIRESIN });
+    // const refreshAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.REFRESHACCESSTOKEN_EXPIRESIN });
     // const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
     // console.log(accessToken)
-    // const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
-    // const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
+    const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
+    const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
     const data = await Auth.findByIdAndUpdate(user._id, { $set: { refreshAccessToken, accessToken } }, { new: true, runValidators: true }).select("-password")
     res.status(200).json({
         status: 'success',
         message: 'User logged in successfully',
         data,
-        accessToken,
-        refreshAccessToken,
-        user
+        // accessToken,
+        // refreshAccessToken,
+        // user
     })
 
 })
