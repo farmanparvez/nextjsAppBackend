@@ -12,9 +12,9 @@ const corsOption = {
 
 app.use(cors(corsOption))
 app.use(express.json())
-// app.get('/', (req, res) => res.status(200).json({
-//     working: 'working'
-// }))
+app.get('/', (req, res) => res.status(200).json({
+    working: 'working'
+}))
 
 app.use('/api', authRouter)
 app.use('/api', userRouter)
