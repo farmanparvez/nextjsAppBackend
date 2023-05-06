@@ -35,13 +35,13 @@ const authSchema = new mongoose.Schema({
     }
 })
 
-authSchema.methods.comparePassord = function(enteredPassword, userPassowrd){
+authSchema.methods.comparePassword = function(enteredPassword, userPassowrd){
     return bcrypt.compare(enteredPassword, userPassowrd)
 }
 
 authSchema.pre('save', async function(next) {
     if(!this.isModified('password')) return next()
-    this.password = await bcrypt.hash(this.password, 12)
+    this.password = await bcrypt.hash(this.password, 10)
     this.confirmPassword = undefined
     next()
 })

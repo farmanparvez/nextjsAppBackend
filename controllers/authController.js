@@ -28,15 +28,16 @@ exports.signIn = catchAsync(async (req, res, next) => {
     if (!email || !password) return next(new AppError('Invalid data', 400))
     const user = await Auth.findOne({ email })
     if (!user) return next(new AppError('User not found', 404))
-    const isMatch = await user.comparePassord(password, user.password)
+    const isMatch = await user.comparePassword(password, user.password)
     if (!isMatch) return next(new AppError('Invalid credentials', 401))
-    const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
-    // const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
+    // const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
+    const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
     // const data = await Auth.findByIdAndUpdate(user._id, { $set: { refreshAccessToken, accessToken } }, { new: true, runValidators: true }).select("-password")
     res.status(200).json({
         status: 'success',
         message: 'User logged in successfully',
         // data
+        // accessToken,
         user
     })
 
