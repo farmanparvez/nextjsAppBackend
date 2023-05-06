@@ -1,8 +1,8 @@
 const catchAsync = require('../utils/catchAsync');
 const Auth = require('../models/auth');
 const AppError = require('../utils/AppError');
-// const generateToken = require('../utils/generateToken');
-const jwt = require('jsonwebtoken');
+const generateToken = require('../utils/generateToken');
+// const jwt = require('jsonwebtoken');
 
 exports.signUp = catchAsync(async (req, res, next) => {
     const { userName, email, password, confirmPassword } = req.body
@@ -23,9 +23,9 @@ exports.signUp = catchAsync(async (req, res, next) => {
     })
 })
 
-const generateToken = (userId, expires) => {
-    return jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: expires })
-}
+// const generateToken = (userId, expires) => {
+//     return jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: expires })
+// }
 
 exports.signIn = catchAsync(async (req, res, next) => {
     const { email, password } = req.body
@@ -34,12 +34,8 @@ exports.signIn = catchAsync(async (req, res, next) => {
     if (!user) return next(new AppError('User not found', 404))
     const isMatch = await user.comparePassword(password, user.password)
     if (!isMatch) return next(new AppError('Invalid credentials', 401))
-    console.log(user.id)
-    console.log(process.env.ACCESSTOKEN_EXPIRESIN)
     // const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.ACCESSTOKEN_EXPIRESIN });
     // const refreshAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.REFRESHACCESSTOKEN_EXPIRESIN });
-    // const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
-    // console.log(accessToken)
     const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
     const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
     const data = await Auth.findByIdAndUpdate(user._id, { $set: { refreshAccessToken, accessToken } }, { new: true, runValidators: true }).select("-password")
