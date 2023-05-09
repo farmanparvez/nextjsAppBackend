@@ -36,9 +36,12 @@ exports.signIn = catchAsync(async (req, res, next) => {
         expire: new Date(
             Date.now() + process.env.ACCESSTOKEN_EXPIRESIN * 24 * 60 * 60 * 1000
         ),
-        // secure: true,
+        secure: true,
         httpOnly: true,
+        domain: ''
     };
+    // res.cookie('token', token, { domain: '', httpOnly: true, secure: true });
+
     // if (process.env.NODE_ENV === "production") cookieOption.secure = true;
     res.cookie("accessToken", accessToken, cookieOption);
     res.cookie("refreshAccessToken", refreshAccessToken, cookieOption);

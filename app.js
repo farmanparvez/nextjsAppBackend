@@ -12,6 +12,7 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 
+
 app.use(cors())
 app.use("*", cors(corsOptions)); // npm i cors
 app.use(express.json())
