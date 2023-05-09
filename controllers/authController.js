@@ -2,7 +2,6 @@ const catchAsync = require('../utils/catchAsync');
 const Auth = require('../models/auth');
 const AppError = require('../utils/AppError');
 const generateToken = require('../utils/generateToken');
-// const jwt = require('jsonwebtoken');
 
 exports.signUp = catchAsync(async (req, res, next) => {
     const { userName, email, password, confirmPassword } = req.body
@@ -23,10 +22,6 @@ exports.signUp = catchAsync(async (req, res, next) => {
     })
 })
 
-// const generateToken = (userId, expires) => {
-//     return jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: expires })
-// }
-
 exports.signIn = catchAsync(async (req, res, next) => {
     const { email, password } = req.body
     if (!email || !password) return next(new AppError('Invalid data', 400))
@@ -34,18 +29,24 @@ exports.signIn = catchAsync(async (req, res, next) => {
     if (!user) return next(new AppError('User not found', 404))
     const isMatch = await user.comparePassword(password, user.password)
     if (!isMatch) return next(new AppError('Invalid credentials', 401))
-    // const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.ACCESSTOKEN_EXPIRESIN });
-    // const refreshAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.REFRESHACCESSTOKEN_EXPIRESIN });
     const accessToken = generateToken(user._id, process.env.ACCESSTOKEN_EXPIRESIN)
     const refreshAccessToken = generateToken(user._id, process.env.REFRESHACCESSTOKEN_EXPIRESIN)
     const data = await Auth.findByIdAndUpdate(user._id, { $set: { refreshAccessToken, accessToken } }, { new: true, runValidators: true }).select("-password")
+    const cookieOption = {
+        expires: new Date(
+            Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+        ),
+        // secure: true,
+        httpOnly: true,
+    };
+    // if (process.env.NODE_ENV === "production") cookieOption.secure = true;
+    res.cookie("jwt", accessToken, cookieOption);
+    res.cookie("jwt", refreshAccessToken, cookieOption);
+
     res.status(200).json({
         status: 'success',
         message: 'User logged in successfully',
         data,
-        // accessToken,
-        // refreshAccessToken,
-        // user
     })
 
 })
