@@ -34,7 +34,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
     const data = await Auth.findByIdAndUpdate(user._id, { $set: { refreshAccessToken, accessToken } }, { new: true, runValidators: true }).select("-password")
     const cookieOption = {
         expires: new Date(
-            Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+            Date.now() + process.env.ACCESSTOKEN_EXPIRESIN * 24 * 60 * 60 * 1000
         ),
         // secure: true,
         httpOnly: true,
