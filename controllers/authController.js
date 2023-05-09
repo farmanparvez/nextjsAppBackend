@@ -40,8 +40,8 @@ exports.signIn = catchAsync(async (req, res, next) => {
         httpOnly: true,
     };
     // if (process.env.NODE_ENV === "production") cookieOption.secure = true;
-    res.cookie("jwt", accessToken, cookieOption);
-    res.cookie("jwt", refreshAccessToken, cookieOption);
+    res.cookie("accessToken", accessToken, cookieOption);
+    res.cookie("refreshAccessToken", refreshAccessToken, cookieOption);
 
     res.status(200).json({
         status: 'success',
